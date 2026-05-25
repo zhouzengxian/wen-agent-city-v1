@@ -49,6 +49,11 @@ body {
   50% { opacity: 0; }
 }
 
+@keyframes demoProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
 /* 自定义滚动条 */
 ::-webkit-scrollbar {
   width: 4px;
