@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import useCityStore from '../store/useCityStore';
 import { agents } from '../data/gameData';
-import { demoScript } from '../data/demoScript';
 
 const phaseNames = {
-  aerial: '苍穹俯瞰 · 粒子汇聚',
-  descent: '城邦降临 · 六坊亮灯',
-  workshop: '坊间漫游 · 匠作工坊',
-  encounter: '跨界偶遇 · 蝶纹飞行',
-  dialogue: 'Agent对话 · 跨域交流',
-  trace: '人脉溯源 · 脉络显现',
-  welcome: '新人入驻 · 墨池加入',
+  aerial: '千星浮现 · 文渊城降临',
+  descent: '十二坊亮灯 · 层峦叠嶂',
+  philosophy: '第一度 · 庄子 ⇄ 德勒兹：块茎即逍遥游',
+  web_rhizome: '第二度 · 德勒兹 ⇄ Kevin Kelly：失控即涌现',
+  ai_emergence: '第三度 · Kelly ⇄ 黄仁勋：算力觉醒',
+  art_hallucination: '第四度 · 黄仁勋 ⇄ Refik Anadol：机器的幻觉',
+  philosophy_art: '第五度 · 达利 ⇄ 杜尚 ⇄ 鲍德里亚：何为艺术？',
+  architecture_dream: '第六度 · 鲍德里亚 ⇄ 库哈斯 ⇄ 藤本壮介：从拟像到自然',
+  east_root: '回归 · 庄子：天地有大美而不言',
+  welcome: '墨池入驻 · 知识星河永续',
 };
 
 export default function DemoOverlay() {
@@ -33,7 +35,7 @@ export default function DemoOverlay() {
         if (prev >= demoDialogue.text.length) { clearInterval(timerRef.current); return prev; }
         return prev + 1;
       });
-    }, 50);
+    }, 45);
     return () => clearInterval(timerRef.current);
   }, [demoDialogue]);
 
@@ -50,18 +52,18 @@ export default function DemoOverlay() {
     <>
       {/* 场景标签 */}
       <div style={{
-        position: 'fixed', top: '10px', left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed', top: '14px', left: '50%', transform: 'translateX(-50%)',
         zIndex: 40, pointerEvents: 'none',
       }}>
         <div style={{
-          background: 'rgba(10,8,20,0.7)',
-          border: '1px solid rgba(201,169,110,0.3)',
+          background: 'rgba(10,8,20,0.75)',
+          border: '1px solid rgba(201,169,110,0.35)',
           borderRadius: '20px',
-          padding: '4px 16px',
+          padding: '5px 18px',
           color: '#c9a96e',
-          fontSize: '11px',
+          fontSize: '12px',
           fontFamily: '"Noto Serif SC", serif',
-          letterSpacing: '0.1em',
+          letterSpacing: '0.08em',
           backdropFilter: 'blur(8px)',
         }}>
           {phaseLabel}
@@ -71,13 +73,13 @@ export default function DemoOverlay() {
       {/* 对话气泡 */}
       {speaker && (
         <div style={{
-          position: 'fixed', bottom: '130px', left: '50%', transform: 'translateX(-50%)',
+          position: 'fixed', bottom: '110px', left: '50%', transform: 'translateX(-50%)',
           zIndex: 40, pointerEvents: 'none',
-          background: 'linear-gradient(135deg, rgba(20,12,35,0.95), rgba(10,8,25,0.95))',
+          background: 'linear-gradient(135deg, rgba(20,12,35,0.96), rgba(10,8,25,0.96))',
           border: '1px solid rgba(201,169,110,0.5)',
           borderRadius: '14px', padding: '14px 20px',
-          maxWidth: '440px', minWidth: '280px',
-          color: '#f5e6ca', fontFamily: '"Noto Serif SC", serif', fontSize: '15px',
+          maxWidth: '500px', minWidth: '300px',
+          color: '#f5e6ca', fontFamily: '"Noto Serif SC", serif', fontSize: '14px',
           backdropFilter: 'blur(16px)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.6), 0 0 24px rgba(201,169,110,0.2)',
           animation: 'bubbleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -85,49 +87,18 @@ export default function DemoOverlay() {
           <div style={{ fontSize: '12px', color: speaker.color, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ fontSize: '18px' }}>{speaker.emoji}</span>
             <span style={{ fontWeight: 600 }}>{speaker.name}</span>
+            <span style={{ opacity: 0.5, fontSize: '10px' }}>· {speaker.title}</span>
           </div>
           <div style={{ lineHeight: 1.7, letterSpacing: '0.03em' }}>
             {displayedText}
             {charIndex < demoDialogue.text.length && (
               <span style={{
-                display: 'inline-block', width: '2px', height: '16px',
+                display: 'inline-block', width: '2px', height: '15px',
                 background: speaker.color, marginLeft: '2px',
                 verticalAlign: 'text-bottom', animation: 'blink 0.8s infinite',
               }} />
             )}
           </div>
-        </div>
-      )}
-
-      {/* 人脉溯源标签 */}
-      {demoPhase === 'trace' && (
-        <div style={{
-          position: 'fixed', bottom: '140px', left: '50%', transform: 'translateX(-50%)',
-          zIndex: 40, pointerEvents: 'none',
-          background: 'linear-gradient(135deg, rgba(20,12,35,0.9), rgba(10,8,25,0.9))',
-          border: '1px solid rgba(201,169,110,0.4)',
-          borderRadius: '12px', padding: '8px 18px',
-          color: '#f5e6ca', fontFamily: '"Noto Serif SC", serif', fontSize: '13px',
-          letterSpacing: '0.05em', backdropFilter: 'blur(8px)',
-          animation: 'bubbleIn 0.3s ease-out',
-        }}>
-          🌐 知识脉络追溯中…
-        </div>
-      )}
-
-      {/* 新人入驻标签 */}
-      {demoPhase === 'welcome' && (
-        <div style={{
-          position: 'fixed', bottom: '140px', left: '50%', transform: 'translateX(-50%)',
-          zIndex: 40, pointerEvents: 'none',
-          background: 'linear-gradient(135deg, rgba(20,12,35,0.9), rgba(10,8,25,0.9))',
-          border: '1px solid rgba(184,197,214,0.5)',
-          borderRadius: '12px', padding: '8px 18px',
-          color: '#d8e0f0', fontFamily: '"Noto Serif SC", serif', fontSize: '13px',
-          letterSpacing: '0.05em', backdropFilter: 'blur(8px)',
-          animation: 'bubbleIn 0.3s ease-out',
-        }}>
-          🌙 墨池入驻文渊城，城邦迎来新伙伴
         </div>
       )}
 

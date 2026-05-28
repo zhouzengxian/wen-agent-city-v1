@@ -1,8 +1,6 @@
-import { useMemo, useRef } from 'react';
-import { Text, Billboard } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import { Vector3, CatmullRomCurve3, TubeGeometry, MeshBasicMaterial } from 'three';
+import * as THREE from 'three';
 
+// 直线星座连线 - 简洁利落
 export default function ConnectionLines({ connections, agents }) {
   const agentMap = {};
   agents.forEach((a) => { agentMap[a.id] = a; });
@@ -10,58 +8,44 @@ export default function ConnectionLines({ connections, agents }) {
   return (
     <group>
       {connections.map((conn, i) => {
-        const fromAgent = agentMap[conn.from];
-        const toAgent = agentMap[conn.to];
-        if (!fromAgent || !toAgent) return null;
+        const fromA = agentMap[conn.from];
+        const toA = agentMap[conn.to];
+        if (!fromA || !toA) return null;
 
-        const from = new Vector3(fromAgent.position[0], 0.05, fromAgent.position[2]);
-        const to = new Vector3(toAgent.position[0], 0.05, toAgent.position[2]);
-        const mid = new Vector3().addVectors(from, to).multiplyScalar(0.5);
-        mid.z += (from.x - to.x) * 0.3;
-        mid.y += 0.5;
-        const labelPos = mid.clone();
+        const from = new THREE.Vector3(fromA.position[0], 0, fromA.position[2]);
+        const to = new THREE.Vector3(toA.position[0], 0, toA.position[2]);
 
         return (
-          <group key={`${conn.from}-${conn.to}-${i}`}>
-            {/* 淡色连线 */}
-            <TubeLine points={[from, mid, to]} color={fromAgent.color} opacity={0.15} radius={0.015} />
-            {/* 悬浮标签 */}
-            <FloatingLabel position={labelPos} label={conn.label} color={fromAgent.color} />
-          </group>
+          <StraightLine key={`${conn.from}-${conn.to}-${i}`}
+            from={from} to={to} color={fromA.color} />
         );
       })}
     </group>
   );
 }
 
-// 可靠的 Tube 管线组件
-function TubeLine({ points, color, opacity, radius }) {
-  const curve = useMemo(() => new CatmullRomCurve3(points), [points]);
-  const geometry = useMemo(() => new TubeGeometry(curve, 42, radius, 6, false), [curve, radius]);
+function StraightLine({ from, to, color }) {
+  // 管状直线
+  const dir = new THREE.Vector3().subVectors(to, from);
+  const mid = new THREE.Vector3().addVectors(from, to).multiplyScalar(0.5);
+  const len = dir.length();
 
   return (
-    <mesh geometry={geometry}>
-      <meshBasicMaterial color={color} transparent opacity={opacity} depthWrite={false} />
-    </mesh>
-  );
-}
-
-// 清晰可见的悬浮标签
-function FloatingLabel({ position, label, color }) {
-  return (
-    <Billboard position={position}>
-      <Text
-        fontSize={0.12}
-        color={color}
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.04}
-        outlineColor="#000000"
-        depthTest={false}
-        renderOrder={999}
-      >
-        {label}
-      </Text>
-    </Billboard>
+    <group>
+      {/* 主线 */}
+      <mesh position={mid} quaternion={new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0), dir.normalize()
+      )}>
+        <cylinderGeometry args={[0.01, 0.01, len, 6]} />
+        <meshBasicMaterial color={color} transparent opacity={0.3} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+      {/* 外层辉光 */}
+      <mesh position={mid} quaternion={new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0), dir.normalize()
+      )}>
+        <cylinderGeometry args={[0.03, 0.03, len, 6]} />
+        <meshBasicMaterial color={color} transparent opacity={0.08} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+    </group>
   );
 }

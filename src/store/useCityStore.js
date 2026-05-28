@@ -24,7 +24,8 @@ const useCityStore = create((set, get) => ({
   bubblePosition: { x: 0, y: 0 },
 
   demoPlaying: false, demoPhase: null, demoDialogue: null,
-  demoButterflyPos: null, demoProgress: 0, demoCameraTarget: { x: 0, y: 0, z: 0 },
+  demoButterflyPos: null, demoProgress: 0,
+  demoHighlightAgent: null, // 当前高亮的Agent ID
   traceActive: false, traceIndex: 0,
   residentActive: false, residentProgress: 0,
   autoRotate: false,
@@ -114,20 +115,22 @@ const useCityStore = create((set, get) => ({
   startDemo: () => set({
     demoPlaying: true, demoPhase: 'aerial', demoProgress: 0,
     demoDialogue: null, demoButterflyPos: null,
+    demoHighlightAgent: null,
     traceActive: false, traceIndex: 0,
     residentActive: false, residentProgress: 0,
   }),
   endDemo: () => set({
     demoPlaying: false, demoPhase: null, demoDialogue: null,
     demoButterflyPos: null, demoProgress: 0,
+    demoHighlightAgent: null,
     traceActive: false, traceIndex: 0,
     residentActive: false, residentProgress: 0,
   }),
   setDemoPhase: (p) => set({ demoPhase: p }),
   setDemoDialogue: (d) => set({ demoDialogue: d }),
+  setDemoHighlightAgent: (id) => set({ demoHighlightAgent: id }),
   setDemoButterflyPos: (pos) => set({ demoButterflyPos: pos }),
   setDemoProgress: (p) => set({ demoProgress: p }),
-  setDemoCameraTarget: (t) => set({ demoCameraTarget: t }),
   setTraceActive: (v) => set({ traceActive: v }),
   advanceTrace: () => set((s) => ({ traceIndex: s.traceIndex + 1 })),
   resetTrace: () => set({ traceIndex: 0 }),
